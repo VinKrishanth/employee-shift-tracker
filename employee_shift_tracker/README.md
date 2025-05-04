@@ -9,7 +9,7 @@ A full-stack web application for tracking employee working hours and locations. 
 
 ## 📦 Installation
 
-```bash
+
 # Clone repository
 cd shift-tracker-app
 
