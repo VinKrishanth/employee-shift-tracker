@@ -14,14 +14,14 @@ A full-stack web application for tracking employee working hours and locations. 
 cd shift-tracker-app
 
 # Start backend
-cd server
-npm install
-npm start
+- cd server
+- npm install
+- npm start
 
 # Start frontend
-cd ../client
-npm install
-npm start
+- cd ../client
+- npm install
+- npm start
 
 
 ## 🚀 Tech Stack
