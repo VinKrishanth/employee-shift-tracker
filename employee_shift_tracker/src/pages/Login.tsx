@@ -56,7 +56,6 @@ export default function Login() {
     try {
       setIsLoading(true);
       await login(values.email, values.password);
-      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Login failed",
