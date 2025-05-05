@@ -20,11 +20,11 @@ router.post('/login', login);
 // @route   POST /api/auth/logout
 // @desc    Logout user
 // @access  Private
-router.post('/logout', authEmployee, logout); 
+router.get('/logout', authEmployee, logout); 
 
 
 /**
- * @route   GET /api/employees/me
+ * @route   GET /api/auth/employees/me
  * @desc    Check user authentication status (used in frontend to auto-login)
  * @access  Private
  */
@@ -32,11 +32,13 @@ router.get('/employees/me', authEmployee, authorizeRole('employee') , getAuthent
 
 
 /**
- * @route   GET /api/employees/me
+ * @route   GET /api/auth/employees/me
  * @desc    Check user authentication status (used in frontend to auto-login)
  * @access  Private
  */
 router.get('/admins/me', authEmployee, authorizeRole('admin') , getAuthenticatedEmployee); 
+
+
 
 
 export default router;
