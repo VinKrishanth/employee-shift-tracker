@@ -6,7 +6,7 @@ export const loginEmployee = async (email, password) => {
 };
 
 export const logoutEmployee = async () => {
-  const res = await axios.post("/auth/logout");
+  const res = await axios.get("/auth/logout");
   return res.data;
 };
 
@@ -19,3 +19,5 @@ export const fetchCurrentAdmin = async () => {
   const res = await axios.get("/auth/admins/me");
   return res.data;
 };
+
+

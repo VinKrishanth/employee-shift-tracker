@@ -62,6 +62,23 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				agri: {
+					'primary': '#4CAF50',
+					'primary-light': '#81C784',
+					'primary-dark': '#388E3C',
+					'secondary': '#8D6E63',
+					'secondary-light': '#A1887F',
+					'secondary-dark': '#6D4C41',
+					'accent': '#FFB74D',
+					'background': '#F5F7FA',
+					'surface': '#FFFFFF',
+					'text': '#263238',
+					'text-light': '#546E7A',
+					'success': '#66BB6A',
+					'warning': '#FFA726',
+					'danger': '#EF5350',
+					'info': '#29B6F6'
 				}
 			},
 			borderRadius: {

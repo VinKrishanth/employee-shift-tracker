@@ -11,6 +11,7 @@ import EmployeeDashboard from "./components/employee/EmployeeDashboard";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Login from "./pages/Login";
+import Employee from "./components/admin/Employee";
 
 const queryClient = new QueryClient();
 
@@ -30,20 +31,15 @@ const App = () => (
               <Route
                 path="/admin"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRole="admin">
                     <DashboardLayout />
                   </ProtectedRoute>
                 }
               >
-                <Route
-                  path="dashboard"
-                  element={
-                    <ProtectedRoute requiredRole="admin">
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="employee" element={<Employee />} />
               </Route>
+
               <Route
                 path="/employee"
                 element={
@@ -56,7 +52,7 @@ const App = () => (
                   path="dashboard"
                   element={
                     <ProtectedRoute requiredRole="admin">
-                      <AdminDashboard />
+                      <EmployeeDashboard />
                     </ProtectedRoute>
                   }
                 />

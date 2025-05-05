@@ -60,12 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (data?.user) {
           setUser(data.user);
-
-          if (data.user.role === "admin") {
-            navigate("/admin/dashboard");
-          } else if (data.user.role === "employee") {
-            navigate("/employee/dashboard");
-          }
         } else {
           setUser(null);
         }
@@ -87,7 +81,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("user", JSON.stringify(data?.user));
       setUser(data?.user);
 
-      // Role-based navigation
       if (data?.user?.role === "admin") {
         navigate("/admin/dashboard");
       } else if (data?.user?.role === "employee") {
@@ -112,14 +105,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await logoutEmployee();
-      setUser(null);
-      localStorage.removeItem("user"); // Clear user from local storage
-      toast({
-        title: "Logged out",
-        description: "You have been logged out successfully.",
-      });
-      navigate("/login"); // Redirect to login after logout
+      const data = await logoutEmployee();
+      if (data?.success) {
+        setUser(null);
+        localStorage.removeItem("user");
+        toast({
+          title: "Logged out",
+          description: data?.message || "You have been logged out",
+        });
+        navigate("/login");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
