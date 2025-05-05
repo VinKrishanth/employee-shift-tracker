@@ -2,7 +2,9 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './configs/dbConfig.js';
+import connectCloudinary from './configs/cloudinaryConfig.js';
 import 'dotenv/config';
+import employeeRoutes from './routes/employeeRoutes.js'; 
 
 
 const app = express();
@@ -39,17 +41,14 @@ app.use(cookieParser());
 
 
 // Define routes
-
+app.use('/api/auth', employeeRoutes); 
 
 
 // Health check route
 app.get('/', (req, res) => {
-  res.send("Ecommerce API is working");
+  res.send("Employee Time Tracker API is working");
 });
 
-
-// Error handling middleware (should be the last middleware)
-app.use(errorHandler);
 
 
 // Start the server
