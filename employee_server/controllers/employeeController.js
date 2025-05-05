@@ -53,17 +53,14 @@ export const login = async (req, res) => {
 
 
 
-/**
- * route   POST /api/auth/logout
- * 
- * desc    Logout user
- * access  Private
- */
-
+// @route   POST /api/auth/logout
+// @desc    Logout user
+// @access  Private
 export const logout = (req, res) => {
-  res.clearCookie('token'); // Clear the authentication cookie
+  res.clearCookie('token');
   return res.status(200).json({ success: true, message: 'Logged out successfully.' });
 };
+
 
 
 /**

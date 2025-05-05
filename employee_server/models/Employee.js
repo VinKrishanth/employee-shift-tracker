@@ -4,15 +4,29 @@ import bcrypt from 'bcryptjs';
 // Define the employee schema
 const employeeSchema = new mongoose.Schema(
   {
+    salutation: {
+      type: String,
+      required: true,
+      enum: ["Mr", "Ms", "Mrs", "Dr", "Prof"], 
+    },
     name: {
       type: String,
-      default: '',
+      required: true,
       trim: true,
     },
     lastName: {
       type: String,
-      default: '',
+      required: true,
       trim: true,
+    },
+    birthName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    birthPlace: {
+      type: String,
+      default: true,
     },
     email: {
       type: String,
@@ -30,11 +44,63 @@ const employeeSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
-    profilePicture: {
+    nationality: {
       type: String,
-      default: '', 
+      required: true,
     },
-    phoneNumber: {
+    dateOfBirth: {
+      type: Date,
+      required: true,
+    },
+    job: {
+      type: String,
+      required: true,
+      default: "Trainee",
+      enum: [
+        "Trainee", 
+        "Employee", 
+        "Manager", 
+        "Admin", 
+        "Software Engineer", 
+        "Senior Software Engineer", 
+        "Lead Software Engineer", 
+        "Software Architect"
+      ],
+    },
+    
+    address: {
+      street: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      pinCode: {
+        type: String,
+        required: true,
+      },
+    },
+    telephone: {
+      type: String,
+      required: true,
+    },
+    bankDetails: {
+      branchName: {
+        type: String,
+        required: true,
+      },
+      accountNumber: {
+        type: String,
+        required: true,
+      },
+      bankName: {
+        type: String,
+        required: true,
+      },
+    },
+    profilePicture: {
       type: String,
       default: '', 
     },
@@ -43,6 +109,7 @@ const employeeSchema = new mongoose.Schema(
       enum: ['admin', 'employee'],
       default: 'employee',
     },
+
   },
   {
     timestamps: true, 
