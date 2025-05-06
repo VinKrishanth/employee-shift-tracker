@@ -24,10 +24,6 @@ const employeeSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    birthPlace: {
-      type: String,
-      default: true,
-    },
     email: {
       type: String,
       required: true,
@@ -48,10 +44,6 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    dateOfBirth: {
-      type: Date,
-      required: true,
-    },
     job: {
       type: String,
       required: true,
@@ -67,7 +59,6 @@ const employeeSchema = new mongoose.Schema(
         "Software Architect"
       ],
     },
-    
     address: {
       street: {
         type: String,
@@ -82,22 +73,19 @@ const employeeSchema = new mongoose.Schema(
         required: true,
       },
     },
-    telephone: {
+    telephoneNumber: {
       type: String,
       required: true,
     },
     bankDetails: {
       branchName: {
         type: String,
-        required: true,
       },
       accountNumber: {
         type: String,
-        required: true,
       },
       bankName: {
         type: String,
-        required: true,
       },
     },
     profilePicture: {

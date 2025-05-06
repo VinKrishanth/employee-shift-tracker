@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home,
   Menu,
@@ -9,18 +9,18 @@ import {
   ChevronRight,
   Timer,
   UserCircle,
-  LogOutIcon,
   LogOut,
-} from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+} from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { user , logout} = useAuth();
-  
+  const { user, logout } = useAuth();
+  const [navItems, setNavItems] = useState([]);
+
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -28,26 +28,36 @@ const Navbar = () => {
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const toggleTheme = () => {
-    if (theme === 'dark') {
-      setTheme('light');
+    if (theme === "dark") {
+      setTheme("light");
     } else {
-      setTheme('dark');
+      setTheme("dark");
     }
   };
 
-  const navItems = [
-    { title: 'Dashboard', path: '/admin/dashboard', icon: Home },
-    { title: 'Employee', path: '/admin/employee', icon: UserCircle },
+  const navItemsAdmin = [
+    { title: "Dashboard", path: "/admin/dashboard", icon: Home },
+    { title: "Employee", path: "/admin/employee", icon: UserCircle },
+  ];
+  const navItemsEmployee = [
+    { title: "Dashboard", path: "/employee/dashboard", icon: Home },
+    { title: "Profile", path: "/employee/profile", icon: UserCircle },
   ];
 
+  useEffect(() => {
+    if (!user) return;
+
+    const items = user.role === "employee" ? navItemsEmployee : navItemsAdmin;
+    setNavItems(items);
+  }, [user]);
+
   const isActive = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    return path !== '/' && location.pathname.startsWith(path);
+    if (path === "/" && location.pathname === "/") return true;
+    return path !== "/" && location.pathname.startsWith(path);
   };
 
   return (
     <>
-
       <div className="fixed top-4 left-4 z-40 md:hidden ">
         <button
           onClick={toggleSidebar}
@@ -61,20 +71,22 @@ const Navbar = () => {
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-border shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } md:relative md:translate-x-0 flex flex-col h-full overflow-y-auto`}
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <Timer className="h-6 w-6 text-agri-primary" />
-            <span className="text-lg font-bold text-foreground">Employee Tracker</span>
+            <span className="text-lg font-bold text-foreground">
+              Employee Tracker
+            </span>
           </Link>
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Toggle theme"
           >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         </div>
 
@@ -85,13 +97,15 @@ const Navbar = () => {
               to={item.path}
               className={`nav-link flex items-center space-x-3 py-3 px-4 rounded-lg transition-colors ${
                 isActive(item.path)
-                  ? 'bg-agri-primary/10 text-agri-primary font-medium'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-foreground'
+                  ? "bg-agri-primary/10 text-agri-primary font-medium"
+                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-foreground"
               }`}
               onClick={() => setIsOpen(false)}
             >
               <item.icon
-                className={`h-5 w-5 ${isActive(item.path) ? 'text-agri-primary' : ''}`}
+                className={`h-5 w-5 ${
+                  isActive(item.path) ? "text-agri-primary" : ""
+                }`}
               />
               <span>{item.title}</span>
               {isActive(item.path) && (
@@ -110,12 +124,21 @@ const Navbar = () => {
               <span className="text-sm font-medium">AD</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user && user?.name }</p>
-              <p className="text-xs text-muted-foreground truncate">{user && user?.email }</p>
+              <p className="text-sm font-medium truncate">
+                {user && user?.name}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user && user?.email}
+              </p>
             </div>
             <div>
-            <LogOut onClick={()=>{logout()}} className="h-6 w-6 text-red-500 hover:scale-110 transition-all duration-100" />
-          </div>
+              <LogOut
+                onClick={() => {
+                  logout();
+                }}
+                className="h-6 w-6 text-red-500 hover:scale-110 transition-all duration-100"
+              />
+            </div>
           </div>
         </div>
       </aside>

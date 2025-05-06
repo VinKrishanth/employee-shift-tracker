@@ -1,5 +1,9 @@
+import WelcomeSection from "../WelcomeSection";
+
 export default function EmployeeDashboard() {
   return (
-    <div>EmployeeDashboard</div>
-  )
+    <div className="px-4">
+      <WelcomeSection />
+    </div>
+  );
 }

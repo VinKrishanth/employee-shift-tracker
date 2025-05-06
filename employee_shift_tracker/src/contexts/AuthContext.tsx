@@ -19,6 +19,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -27,6 +28,7 @@ const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  setIsLoading: () => {},
   login: async () => {},
   logout: async () => {},
 };
@@ -128,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        setIsLoading
       }}
     >
       {children}

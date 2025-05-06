@@ -5,6 +5,11 @@ export const loginEmployee = async (email, password) => {
   return res.data;
 };
 
+export const registerEmployee = async (formdata) => {
+  const res = await axios.post("/auth/register", formdata);
+  return res.data;
+};
+
 export const logoutEmployee = async () => {
   const res = await axios.get("/auth/logout");
   return res.data;

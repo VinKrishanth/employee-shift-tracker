@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,7 +38,6 @@ type FormValues = z.infer<typeof formSchema>;
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const navigate = useNavigate();
   const { login} = useAuth();
   const { toast } = useToast();
   const isMobile = useIsMobile();

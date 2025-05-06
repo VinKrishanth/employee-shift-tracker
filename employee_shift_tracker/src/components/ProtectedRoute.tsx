@@ -12,8 +12,10 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="animate-pulse text-lg">Loading...</div>
+      <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="animate-pulse text-lg text-gray-700 dark:text-white">
+          Loading protected route...
+        </div>
       </div>
     );
   }
@@ -22,8 +24,7 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Role-based access control
-  if (requiredRole && user?.role !== requiredRole) {
+  if (isAuthenticated && user?.role !== requiredRole) {
     return <Navigate to="/login" replace />;
   }
 
