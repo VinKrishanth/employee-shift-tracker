@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Employee from "./components/admin/Employee";
 import Profile from "./components/employee/Profile";
 import { TimeTrackingProvider } from "./contexts/TimeTrackingContext";
+import Project from "./components/employee/Project";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => {
                   >
                     <Route path="dashboard" element={<EmployeeDashboard />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="create-project" element={<Project />} />
                   </Route>
                 </Routes>
               </TooltipProvider>

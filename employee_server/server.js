@@ -5,6 +5,7 @@ import connectDB from './configs/dbConfig.js';
 import connectCloudinary from './configs/cloudinaryConfig.js';
 import 'dotenv/config';
 import employeeRoutes from './routes/employeeRoutes.js'; 
+import projectRoutes from './routes/projectRoutes.js'; 
 
 
 const app = express();
@@ -42,6 +43,7 @@ app.use(cookieParser());
 
 // Define routes
 app.use('/api/auth', employeeRoutes); 
+app.use('/api/auth/project', projectRoutes); 
 
 
 // Health check route

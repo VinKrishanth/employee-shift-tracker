@@ -1,7 +1,6 @@
 import express from 'express';
 import authEmployee from '../middlewares/authEmployee.js';
 import authorizeRole from '../middlewares/authorizeRole.js';
-import upload from '../middlewares/upload.js';
 
 import {
   login,

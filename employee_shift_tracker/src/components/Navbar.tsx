@@ -10,6 +10,7 @@ import {
   Timer,
   UserCircle,
   LogOut,
+  ClipboardPenLineIcon,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,6 +43,7 @@ const Navbar = () => {
   const navItemsEmployee = [
     { title: "Dashboard", path: "/employee/dashboard", icon: Home },
     { title: "Profile", path: "/employee/profile", icon: UserCircle },
+    { title: "Projects", path: "/employee/create-project", icon: ClipboardPenLineIcon  },
   ];
 
   useEffect(() => {

@@ -4,6 +4,12 @@ import generateToken from '../utils/generateToken.js';
 import { cookieOptions } from '../utils/cookieOptions.js';
 
 
+/**
+ * @route   POST /api/auth/register
+ * @desc    Authenticate employee & get token
+ * @access  Private
+ */
+
 export const register = async (req, res) => {
   try {
     const {
