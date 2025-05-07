@@ -12,7 +12,8 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Login from "./pages/Login";
 import Employee from "./components/admin/Employee";
-import  Profile  from "./components/employee/Profile";
+import Profile from "./components/employee/Profile";
+import { TimeTrackingProvider } from "./contexts/TimeTrackingContext";
 
 const queryClient = new QueryClient();
 
@@ -24,53 +25,50 @@ const App = () => {
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
+            <TimeTrackingProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      user?.role === "employee" ? (
+                        <Navigate to="/employee/dashboard" replace />
+                      ) : (
+                        <Navigate to="/login" replace />
+                      )
+                    }
+                  />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="*" element={<NotFound />} />
 
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    user?.role === "employee" ? (
-                      <Navigate to="/employee/dashboard" replace />
-                    ) : (
-                      <Navigate to="/login" replace />
-                    )
-                  }
-                />
-                <Route path="/login" element={<Login />} />
-                <Route path="*" element={<NotFound />} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="employee" element={<Employee />} />
+                  </Route>
 
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute
-                      requiredRole="admin"
-                    >
-                      <DashboardLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="dashboard" element={<AdminDashboard />} />
-                  <Route path="employee" element={<Employee />} />
-                </Route>
-
-                <Route
-                  path="/employee"
-                  element={
-                    <ProtectedRoute
-                      requiredRole="employee"
-                    >
-                      <DashboardLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="dashboard" element={<EmployeeDashboard />} />
-                  <Route path="profile" element={<Profile />} />
-                </Route>
-              </Routes>
-            </TooltipProvider>
+                  <Route
+                    path="/employee"
+                    element={
+                      <ProtectedRoute requiredRole="employee">
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route path="dashboard" element={<EmployeeDashboard />} />
+                    <Route path="profile" element={<Profile />} />
+                  </Route>
+                </Routes>
+              </TooltipProvider>
+            </TimeTrackingProvider>
           </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
