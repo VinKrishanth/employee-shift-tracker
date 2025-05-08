@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createProjects } from '@/api/authProject.js';
+import { createProjects, getProject, updateProject } from "@/api/authProject.js";
 import { useToast } from "@/components/ui/use-toast";
 
 import {
@@ -45,12 +45,13 @@ const formSchema = z.object({
 
 const CreateProject = () => {
   const navigate = useNavigate();
+  const [loadingProject, setLoadingProject] = useState(false);
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const { toast } = useToast();
+  const projectId = useParams<{ id: string }>();
 
-  // Initialize form with react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,33 +68,79 @@ const CreateProject = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-
+  
     try {
-      const data = await createProjects(values);
-      if(data.success){
+      let response;
+  
+      if (projectId.id) {
+        response = await updateProject(projectId.id, values);
+      } else {
+        response = await createProjects(values);
+      }
+  
+      if (response.success) {
         toast({
-          title: "Login successful",
-          description: `${data?.message}`,
+          title: projectId.id ? "Project updated successfully" : "Project created successfully",
+          description: response.message,
         });
         navigate("/employee/dashboard");
       }
-      
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Create Project failed",
-        description: error?.response?.data?.message || "Invalid credentials",
+        title: projectId.id ? "Project update failed" : "Project creation failed",
+        description: error?.response?.data?.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      if (!projectId.id) return;
+
+      setLoadingProject(true);
+      try {
+        const data = await getProject(projectId.id);
+        console.log("Project data:", data);
+        if (data.success) {
+          let projectData = data.project;
+          form.reset({
+            taskName: projectData.taskName || "",
+            description: projectData.description || "",
+            startDate: projectData.startDate
+              ? projectData.startDate.split("T")[0]
+              : "",
+            endDate: projectData.endDate
+              ? projectData.endDate.split("T")[0]
+              : "",
+            process: projectData.process || "",
+            status: projectData.status || "Not Started",
+            priority: projectData.priority || "Medium",
+            assignedTo: projectData.assignedTo || user?.name || "",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load project data.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingProject(false);
+      }
+    };
+
+    fetchProject();
+  }, []);
 
   return (
     <>
       <div className="container mx-auto sm:px-4 py-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
-          Create New Project
+          {projectId?.id ? "Update Project" : "Create New Project"}
         </h1>
 
         <div className="bg-card shadow-md rounded-lg p-6">
@@ -105,9 +152,20 @@ const CreateProject = () => {
                   name="taskName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Task Name</FormLabel>
+                      <FormLabel>
+                        Task Name{" "}
+                        {projectId.id && (
+                          <span className="text-xs font-normal text-red-400">
+                            (Read Only)
+                          </span>
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter task name" {...field} />
+                        <Input
+                          placeholder="Enter task name"
+                          {...field}
+                          readOnly={!!projectId.id}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -119,7 +177,14 @@ const CreateProject = () => {
                   name="assignedTo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned To</FormLabel>
+                      <FormLabel>
+                        Assigned To{" "}
+                        {projectId.id && (
+                          <span className="text-xs font-normal text-red-400">
+                            (Read Only)
+                          </span>
+                        )}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter team member name"
@@ -137,14 +202,26 @@ const CreateProject = () => {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel>
+                        Start Date{" "}
+                        {projectId.id && (
+                          <span className="text-xs font-normal text-red-400">
+                            (Read Only)
+                          </span>
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} min={today} />
+                        <Input
+                          type="date"
+                          {...field}
+                          min={!projectId?.id ? today : undefined}
+                          readOnly={!!projectId.id}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
-                /> 
+                />
 
                 <FormField
                   control={form.control}
@@ -153,7 +230,11 @@ const CreateProject = () => {
                     <FormItem>
                       <FormLabel>End Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} min={today} />
+                        <Input
+                          type="date"
+                          {...field}
+                          min={!projectId?.id ? today : undefined}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -289,7 +370,13 @@ const CreateProject = () => {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Creating..." : "Create Project"}
+                  {projectId.id
+                    ? isSubmitting
+                      ? "Updating..."
+                      : "Update Project"
+                    : isSubmitting
+                    ? "Creating..."
+                    : "Create Project"}
                 </Button>
               </div>
             </form>

@@ -108,13 +108,12 @@ export const getEmployeeProjects = async (req, res) => {
  * @desc    Get a single project by ID
  * @access  Private (Employee)
  */
+
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const project = await Project.findById(id)
-      .populate('userId')
-      .populate('assignedTo');
+    const project = await Project.findById(id);
 
     if (!project) {
       return res.status(404).json({
@@ -133,6 +132,48 @@ export const getProjectById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to fetch the project.',
+    });
+  }
+};
+
+
+/**
+ * @route   PUT /api/projects/:id
+ * @desc    Update specific fields of a project (priority, description, process, endDate)
+ * @access  Private (Employee)
+ */
+
+export const updateProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { priority, description, process, endDate } = req.body;
+
+    // Find the project
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Project not found.',
+      });
+    }
+
+    if (priority) project.priority = priority;
+    if (description) project.description = description;
+    if (process) project.process = process;
+    if (endDate) project.endDate = endDate;
+
+    await project.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Project updated successfully.',
+      project,
+    });
+  } catch (error) {
+    console.error('[Update Project Error]:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update the project.',
     });
   }
 };

@@ -23,21 +23,11 @@ export interface TaskData {
 
 interface TaskTableProps {
   data: TaskData[];
-  onDelete: (id: string) => void;
-  onEdit: (profile: TaskData) => void;
+  onTaskStart: (profile: TaskData) => void;
+  onEdit: (id: String) => void;
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ data, onDelete, onEdit }) => {
-  const { toast } = useToast();
-
-  const handleDelete = (id: string) => {
-    onDelete(id);
-    toast({
-      title: "Profile deleted",
-      description: "Profile has been deleted successfully",
-    });
-  };
-
+const TaskTable: React.FC<TaskTableProps> = ({ data, onTaskStart, onEdit }) => {
   return (
     <div className="rounded-md border">
       <Table>
@@ -75,7 +65,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ data, onDelete, onEdit }) => {
                   <div className="flex justify-center items-center">
                     <Button
                       variant="outline"
-                      onClick={() => onEdit(task)}
+                      onClick={() => onTaskStart(task)}
                       className=""
                     >
                       Start
@@ -88,7 +78,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ data, onDelete, onEdit }) => {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => onEdit(task)}
+                      onClick={() => onEdit(task.id)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>

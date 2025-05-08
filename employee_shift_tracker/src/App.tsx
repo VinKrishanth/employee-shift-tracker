@@ -67,6 +67,7 @@ const App = () => {
                     <Route path="dashboard" element={<EmployeeDashboard />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="create-project" element={<Project />} />
+                    <Route path="edit-project/:id" element={<Project />} />
                   </Route>
                 </Routes>
               </TooltipProvider>

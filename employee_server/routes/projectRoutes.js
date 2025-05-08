@@ -30,4 +30,11 @@ router.get('/employee', authEmployee, authorizeRole('employee'), getEmployeeProj
  */
 router.get('/:id', authEmployee, authorizeRole('employee'), getProjectById);
 
+/**
+ * @route   Put /api/projects/:id
+ * @desc    Update a single project by ID
+ * @access  Private (Employee)
+ */
+router.put('/:id', authEmployee, authorizeRole('employee'), getProjectById);
+
 export default router;

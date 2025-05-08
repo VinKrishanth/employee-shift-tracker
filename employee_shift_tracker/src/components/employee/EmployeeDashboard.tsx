@@ -8,16 +8,7 @@ import { PlusSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getAllProjects } from "@/api/authProject.js";
 
-// const dummyProfiles: TaskData[] = [
-//   {
-//     id: "1",
-//     taskName: "Time Tracker",
-//     startDate: "2025-05-07",
-//     endDate: "2025-05-07",
-//     process: "30%",
-//     status: "In Progress",
-//   },
-// ];
+
 
 export default function EmployeeDashboard() {
   const [profiles, setProfiles] = useState<TaskData[]>([]);
@@ -44,17 +35,16 @@ export default function EmployeeDashboard() {
     fetchProjects();
   }, []);
 
-  const handleDelete = (id: string) => {
-    setProfiles((prev) => prev.filter((profile) => profile.id !== id));
+  const onTaskStart = (profile: TaskData) => {
+    
   };
 
-  const handleEdit = (profile: TaskData) => {
-    console.log("Editing profile:", profile);
-    // Add modal or routing logic here
+  const handleEdit = (id: string) => {
+    navigate(`/employee/edit-project/${id}`);
   };
 
   return (
-    <div className="sm:px-4">
+    <div className="sm:px-4 mt-4">
       <WelcomeSection />
       <div className=" mx-auto  px-4 py-6 space-y-6">
         <div className="pt-2 ">
@@ -73,7 +63,7 @@ export default function EmployeeDashboard() {
           </div>
           <ProfileTable
             data={profiles}
-            onDelete={handleDelete}
+            onTaskStart={onTaskStart}
             onEdit={handleEdit}
           />
         </div>
