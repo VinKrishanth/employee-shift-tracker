@@ -1,12 +1,12 @@
 import axios from "@/lib/axios"; 
 
 export const loginEmployee = async (email, password) => {
-  const res = await axios.post("/auth/login", { email, password });
+  const res = await axios.post("/api/auth/login", { email, password });
   return res.data;
 };
 
 export const registerEmployee = async (formdata) => {
-  const res = await axios.post("/auth/register", formdata);
+  const res = await axios.post("/api/auth/register", formdata);
   return res.data;
 };
 
