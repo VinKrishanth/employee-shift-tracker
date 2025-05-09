@@ -30,7 +30,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchEmployeeProfile = async () => {
       try {
-        const response = await axios.get("/auth/employees/profile", {
+        const response = await axios.get("/api/auth/employees/profile", {
           params: { id: user?.id },
         });
         if (response.data.success) {

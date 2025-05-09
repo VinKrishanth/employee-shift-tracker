@@ -72,7 +72,7 @@ export default function Login() {
       </div>
 
       <div
-        className={`w-full max-w-4xl shadow-lg overflow-hidden rounded-lg flex ${
+        className={`w-full max-w-4xl shadow-lg overflow-hidden rounded-lg flex mt-4 ${
           isMobile ? "flex-col" : "flex-row"
         }`}
       >
@@ -197,7 +197,7 @@ export default function Login() {
             <div className="mt-2 text-xs text-muted-foreground">
               <p>Demo credentials:</p>
               <p>Admin: admin@example.com / admin@1234</p>
-              <p>Employee: employee@example.com / password</p>
+              <p>Employee: employee@example.com / employee@1234</p>
             </div>
           </div>
         </Card>
