@@ -82,5 +82,11 @@ The **Employee Shift Tracker** is designed to help employees manage and track th
   The Vite app will run on http://localhost:8080
   
   
+🚀 Deployment
+You can deploy this app using:
+
+Frontend:
+ -Vercel https://employee-shift-tracker.vercel.app
+
 
 
