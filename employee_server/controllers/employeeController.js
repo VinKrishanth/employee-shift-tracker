@@ -2,13 +2,15 @@ import Employee from '../models/Employee.js';
 import bcrypt from 'bcryptjs';
 import generateToken from '../utils/generateToken.js';
 import { cookieOptions } from '../utils/cookieOptions.js';
-
+import { sendEmail } from '../utils/emailService.js';
 
 /**
  * @route   POST /api/auth/register
  * @desc    Authenticate employee & get token
  * @access  Private
  */
+
+  // Import email service
 
 export const register = async (req, res) => {
   try {
@@ -66,7 +68,6 @@ export const register = async (req, res) => {
       }
     });
 
-
     const employeeResponse = {
       id: employee._id,
       name: employee.name,
@@ -74,10 +75,20 @@ export const register = async (req, res) => {
       role: employee.role,
     };
 
+    // Send email with employee details
+    const emailSubject = 'Employee Registration Successful';
+    const emailText = `Hello ${employee.name},\n\nYour registration was successful! Here are your details:\nEmployee ID: ${employee._id}\nName: ${employee.name}\nEmail: ${employee.email}\n\nThank you for registering!`;
+    const emailHtml = `<h1>Registration Successful</h1><p>Hello ${employee.name},</p><p>Your registration was successful! Here are your details:</p><ul><li>Employee ID: ${employee._id}</li><li>Name: ${employee.name}</li>
+    <li>Email: ${employee.email}</li>
+    <li>Password: ${password}</li>
+    </ul><p>Thank you for registering!</p>`;
+
+    await sendEmail(employee.email, emailSubject, emailText, emailHtml);
+
     return res.status(201).json({
       success: true,
       user: employeeResponse,
-      message: 'Employee information has been saved successfully',
+      message: 'Employee information has been saved successfully and email sent.',
     });
   } catch (error) {
     console.error('[Register Error]:', error);
@@ -90,6 +101,7 @@ export const register = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
+
 
 
 
