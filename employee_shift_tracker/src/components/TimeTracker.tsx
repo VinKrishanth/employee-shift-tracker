@@ -151,8 +151,8 @@ const TimeTracker: React.FC = () => {
         <CardContent className="space-y-4">
           {currentEntry && (
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex justify-between items-center  sm:flex-row flex-col">
+                <div className="flex items-center  gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span>
                     {format(new Date(currentEntry.date), "EEEE, MMMM d, yyyy")}
@@ -164,11 +164,11 @@ const TimeTracker: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                <div className="p-3 bg-muted/50 rounded-md">
-                  <div className="text-xs text-muted-foreground mb-1">
+                <div className="p-3 bg-muted/50 rounded-md flex sm:flex-col  justify-between sm:items-start items-center">
+                  <div className="text-sm text-muted-foreground mb-1">
                     Started at
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-xs">
                     <Clock className="h-4 w-4 text-primary" />
                     <span className="font-medium">
                       {formatDate(currentEntry.startTime)}
@@ -176,13 +176,13 @@ const TimeTracker: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-3 bg-muted/50 rounded-md">
-                  <div className="text-xs text-muted-foreground mb-1">
+                <div className="p-3 bg-muted/50 rounded-md flex sm:flex-col  justify-between sm:items-start items-center">
+                  <div className="text-sm text-muted-foreground mb-1">
                     Location
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-primary" />
-                    <span className="font-medium">
+                    <span className="font-medium text-xs">
                       {currentEntry.startLocation
                         ? "Recorded"
                         : "Not available"}

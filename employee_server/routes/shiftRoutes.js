@@ -1,7 +1,14 @@
 import express from 'express';
 import authEmployee from '../middlewares/authEmployee.js';
 import authorizeRole from '../middlewares/authorizeRole.js';
-import { startShift, endShift, startBreak, endBreak } from '../controllers/shiftController.js';
+import {
+    startShift,
+    endShift,
+    startBreak,
+    endBreak,
+    getUserShifts,
+  } from '../controllers/shiftController.js';
+  
 
 const router = express.Router();
 
@@ -34,5 +41,12 @@ router.put('/break/start', authEmployee, authorizeRole('employee'), startBreak);
 * @access  Private (Employee)
 */
 router.put('/break/end', authEmployee, authorizeRole('employee'), endBreak);
+
+/**
+* @route  PUT /api/shifts
+* @desc    Get all shifts for a specific employee
+* @access  Private (Employee)
+*/
+router.get('/', authEmployee, authorizeRole('employee'), getUserShifts);
 
 export default router;

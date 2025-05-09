@@ -49,9 +49,9 @@ const formSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters." }),
   telephoneNumber: z.string().min(1, { message: "Phone number is required" }),
-  branchName: z.string().optional(),
-  bankName: z.string().optional(),
-  accountNumber: z.string().optional(),
+  branchName: z.string().min(1, { message: "Required" }),
+  bankName: z.string().min(1, { message: "Required" }),
+  accountNumber: z.string().min(1, { message: "Required" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -405,7 +405,7 @@ const ProfileForm: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Bank Details
+                Bank Details <span className="text-red-500">*</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -415,7 +415,7 @@ const ProfileForm: React.FC = () => {
                   name="branchName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Branch Name</FormLabel>
+                      <FormLabel>Branch Name <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Enter branch name" {...field} />
                       </FormControl>
@@ -429,7 +429,7 @@ const ProfileForm: React.FC = () => {
                   name="bankName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bank Name</FormLabel>
+                      <FormLabel>Bank Name <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Enter bank name" {...field} />
                       </FormControl>
@@ -444,7 +444,7 @@ const ProfileForm: React.FC = () => {
                 name="accountNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account Number</FormLabel>
+                    <FormLabel>Account Number <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input placeholder="Enter account number" {...field} />
                     </FormControl>

@@ -5,7 +5,7 @@ import {
   createShift,
   endShift,
   startBreak,
-  stopBreak,
+  stopBreak
 } from "@/api/shiftApi.js";
 
 export type TimeStatus = "idle" | "working" | "break";
@@ -68,7 +68,6 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [locationPermissionGranted, setLocationPermissionGranted] =
     useState(false);
 
-  // Load stored entries on mount or when user changes
   useEffect(() => {
     if (user) {
       const storedEntries = localStorage.getItem("timeTrackEntries");
@@ -282,12 +281,12 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       return;
     }
-  
+
     const shiftEndPayload = {
       id: currentEntry._id,
       endTime: new Date().toISOString(),
     };
-  
+
     console.log(currentEntry._id);
     setIsLoading(true);
     try {
@@ -318,7 +317,6 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(false);
     }
   };
-  
 
   const endWork = async (notes: string = ""): Promise<void> => {
     if (currentStatus === "idle" || !currentEntry) {

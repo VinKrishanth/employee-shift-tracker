@@ -211,3 +211,41 @@ export const endBreak = async (req, res) => {
     });
   }
 };
+
+
+
+
+/**
+ * @route   GET /api/shifts/user/:employeeId
+ * @desc    Get all shifts for a specific user (optional filter: only active)
+ * @access  Private (Employee or Admin)
+ */
+export const getUserShifts = async (req, res) => {
+  try {
+    const employeeId = req.employee?.id;
+
+    if (!employeeId) {
+      return res.status(400).json({ success: false, message: 'Employee ID is required' });
+    }
+
+    // Optionally filter by ongoing only via query param
+    const { activeOnly } = req.query;
+    const filter = { employeeId };
+    if (activeOnly === 'true') {
+      filter.endTime = null;
+    }
+
+    const shifts = await Shift.find(filter).sort({ startTime: -1 });
+
+    return res.status(200).json({
+      success: true,
+      shifts,
+    });
+  } catch (error) {
+    console.error('Error fetching user shifts:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while fetching user shifts',
+    });
+  }
+};

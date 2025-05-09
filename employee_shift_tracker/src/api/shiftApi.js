@@ -33,3 +33,8 @@ export const stopBreak = async (values) => {
     console.error('Error ending shift:', error);
   }
 };
+
+export const getUserShifts = async (activeOnly = true) => {
+  const response = await fetch(`/api/shifts?activeOnly=${activeOnly}`);
+  return response.json();
+};

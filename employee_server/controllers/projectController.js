@@ -2,7 +2,7 @@ import Project from '../models/Project.js';
 import Employee from '../models/Employee.js';
 
 /**
- * @route   POST /api/projects/create
+ * @route   POST /api/auth/projects/create
  * @desc    Create a new project
  * @access  Private (Employee)
  */
@@ -77,7 +77,7 @@ export const createProject = async (req, res) => {
 
 
 /**
- * @route   GET /api/projects/employee
+ * @route   GET /api/auth/projects/employee
  * @desc    Get all projects created by the current employee
  * @access  Private (Employee)
  */
@@ -104,7 +104,7 @@ export const getEmployeeProjects = async (req, res) => {
 
 
 /**
- * @route   GET /api/projects/:id
+ * @route   GET /api/auth/project/:id
  * @desc    Get a single project by ID
  * @access  Private (Employee)
  */
@@ -138,7 +138,7 @@ export const getProjectById = async (req, res) => {
 
 
 /**
- * @route   PUT /api/projects/:id
+ * @route   PUT /api/auth/project/:id
  * @desc    Update specific fields of a project (priority, description, process, endDate)
  * @access  Private (Employee)
  */
