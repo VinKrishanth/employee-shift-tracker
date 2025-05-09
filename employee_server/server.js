@@ -14,6 +14,7 @@ const port = process.env.PORT || 5000;
 
 // Allow multiple origin
 const allowedOrigins = [
+  "http://localhost:8080",
   process.env.FRONTEND_URL 
 ];
 
