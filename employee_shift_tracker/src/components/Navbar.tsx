@@ -12,6 +12,7 @@ import {
   LogOut,
   ClipboardPenLineIcon,
   HistoryIcon,
+  Users2Icon,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,7 +40,8 @@ const Navbar = () => {
 
   const navItemsAdmin = [
     { title: "Dashboard", path: "/admin/dashboard", icon: Home },
-    { title: "Employee", path: "/admin/employee", icon: UserCircle },
+    { title: "Employees", path: "/admin/employees", icon: Users2Icon },
+    { title: "Add Employee", path: "/admin/create-employee", icon: UserCircle },
   ];
   const navItemsEmployee = [
     { title: "Dashboard", path: "/employee/dashboard", icon: Home },

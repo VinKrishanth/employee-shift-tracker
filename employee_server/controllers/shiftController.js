@@ -249,3 +249,108 @@ export const getUserShifts = async (req, res) => {
     });
   }
 };
+
+
+/**
+ * @route   GET /api/shifts/history
+ * @desc    Get completed shift history for the logged-in employee
+ * @access  Private (Employee)
+ */
+export const getEmployeeShiftHistory = async (req, res) => {
+  try {
+    const employeeId = req.employee?.id;
+
+    if (!employeeId) {
+      return res.status(400).json({ success: false, message: 'Employee ID is required' });
+    }
+
+    const completedShifts = await Shift.find({
+      employeeId,
+      endTime: { $ne: null }
+    }).sort({ startTime: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Completed shift history retrieved successfully',
+      shifts: completedShifts
+    });
+  } catch (error) {
+    console.error('Error fetching shift history:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while fetching shift history'
+    });
+  }
+};
+
+
+/**
+ * @route   Post /api/shifts/admin/employee/history
+ * @desc    Get completed shift history for the All employee
+ * @access  Private (Employee)
+ */
+export const getAdminViewShiftHistory = async (req, res) => {
+  try {
+    const { id: employeeId} = req.body;
+
+    if (!employeeId) {
+      return res.status(400).json({ success: false, message: 'Employee ID is required' });
+    }
+
+    const completedShifts = await Shift.find({
+      employeeId,
+      endTime: { $ne: null }
+    }).sort({ startTime: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Completed shift history retrieved successfully',
+      shifts: completedShifts
+    });
+  } catch (error) {
+    console.error('Error fetching shift history:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while fetching shift history'
+    });
+  }
+};
+
+
+
+
+/**
+ * @route   GET /api/shifts/all
+ * @desc    Get all employee shifts with check-in/out times, duration, and locations
+ * @access  Private (Admin)
+ */
+export const getAllEmployeeShifts = async (req, res) => {
+  try {
+    // You could enhance this with query filters: by date, employeeId, projectId, etc.
+    const shifts = await Shift.find()
+      .populate('employeeId', 'name email') // Optional: populate employee info
+      .sort({ date: -1, startTime: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: 'All employee shifts retrieved successfully',
+      shifts: shifts.map(shift => ({
+        employee: shift.employeeId,
+        date: shift.date,
+        checkIn: shift.startTime,
+        checkOut: shift.endTime,
+        duration: shift.shiftHours,
+        startLocation: shift.startLocation,
+        endLocation: shift.endLocation,
+        projectId: shift.projectId,
+        notes: shift.notes || '',
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching all employee shifts:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while fetching shifts'
+    });
+  }
+};

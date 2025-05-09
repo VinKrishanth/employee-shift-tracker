@@ -8,7 +8,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EmployeeDashboard from "./components/employee/EmployeeDashboard";
-import AdminDashboard from "./components/admin/AdminDashboard";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Login from "./pages/Login";
 import Employee from "./components/admin/Employee";
@@ -16,6 +15,9 @@ import Profile from "./components/employee/Profile";
 import { TimeTrackingProvider } from "./contexts/TimeTrackingContext";
 import Project from "./components/employee/Project";
 import History from "./components/employee/History";
+import ScrollToTop from '@/components/ScrollToTop'
+import EmployeePage from "./components/admin/EmployeePage";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,7 @@ const App = () => {
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
+            <ScrollToTop />
             <TimeTrackingProvider>
               <TooltipProvider>
                 <Toaster />
@@ -54,7 +57,9 @@ const App = () => {
                     }
                   >
                     <Route path="dashboard" element={<AdminDashboard />} />
-                    <Route path="employee" element={<Employee />} />
+                    <Route path="employees" element={<EmployeePage />} />
+                    <Route path="create-employee" element={<Employee />} />
+                    <Route path="history/:id" element={<History />} />
                   </Route>
 
                   <Route

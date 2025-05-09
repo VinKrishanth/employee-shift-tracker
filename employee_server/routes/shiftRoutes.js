@@ -7,6 +7,9 @@ import {
     startBreak,
     endBreak,
     getUserShifts,
+    getEmployeeShiftHistory,
+    getAdminViewShiftHistory,
+    getAllEmployeeShifts
   } from '../controllers/shiftController.js';
   
 
@@ -48,5 +51,24 @@ router.put('/break/end', authEmployee, authorizeRole('employee'), endBreak);
 * @access  Private (Employee)
 */
 router.get('/', authEmployee, authorizeRole('employee'), getUserShifts);
+
+
+router.get('/history', authEmployee, authorizeRole('employee'), getEmployeeShiftHistory);
+
+/**
+ * @route   Post /api/shifts/admin/employee/history
+ * @desc    Get completed shift history for the All employee
+ * @access  Private (Employee)
+ */
+
+router.post('/admin/employee/history', authEmployee, authorizeRole('admin'), getAdminViewShiftHistory);
+
+
+/**
+ * @route   GET /api/shifts/all
+ * @desc    Get all employee shifts with check-in/out times, duration, and locations
+ * @access  Private (Admin)
+*/
+router.get('/all',authEmployee, authorizeRole('admin'), getAllEmployeeShifts);
 
 export default router;

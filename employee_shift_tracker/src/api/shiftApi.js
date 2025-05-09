@@ -35,6 +35,11 @@ export const stopBreak = async (values) => {
 };
 
 export const getUserShifts = async (activeOnly = true) => {
-  const response = await fetch(`/api/shifts?activeOnly=${activeOnly}`);
+  const response = await fetch(`/shifts?activeOnly=${activeOnly}`);
   return response.json();
+};
+
+export const getAllEmployeeShift= async () => {
+  const res = await axios.get("/shift/all");
+  return res.data;
 };

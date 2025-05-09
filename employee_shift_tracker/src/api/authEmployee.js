@@ -26,3 +26,11 @@ export const fetchCurrentAdmin = async () => {
 };
 
 
+export const getAllEmployee= async () => {
+  const res = await axios.get("/auth/employees/allProfile");
+  return res.data;
+};
+
+
+
+
