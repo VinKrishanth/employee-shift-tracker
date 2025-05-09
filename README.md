@@ -54,30 +54,30 @@ The **Employee Shift Tracker** is designed to help employees manage and track th
 
 ⚙️ Installation & Setup
 1. Clone the repository
-   git clone https://github.com/your-username/employee-shift-tracker.git
-   cd employee-shift-tracker
+  - git clone https://github.com/your-username/employee-shift-tracker.git
+  - cd employee-shift-tracker
 
 2. Backend Setup (employee_server)
-  cd employee_server
-  npm install
+ - cd employee_server
+ - npm install
 
  Create .env file:
-  PORT=5000
-  MONGO_URI=your_mongodb_connection_string
-  JWT_SECRET=your_jwt_secret
-  EMAIL_USER=your_email@example.com
-  EMAIL_PASS=your_email_password
+- PORT=5000
+-  MONGO_URI=your_mongodb_connection_string
+-  JWT_SECRET=your_jwt_secret
+ - EMAIL_USER=your_email@example.com
+ - EMAIL_PASS=your_email_password
 
 
   Run the server:
-    npm start dev
+ -   npm start dev
     
   The server will run on http://localhost:5000
 
   3. Frontend Setup (employee_shift_tracker)
-       cd ../employee_shift_tracker
-       npm install
-       npm start
+   -    cd ../employee_shift_tracker
+   -    npm install
+   -    npm start
 
   The Vite app will run on http://localhost:8080
   
