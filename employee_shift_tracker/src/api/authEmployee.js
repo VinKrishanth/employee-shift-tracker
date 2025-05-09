@@ -11,23 +11,23 @@ export const registerEmployee = async (formdata) => {
 };
 
 export const logoutEmployee = async () => {
-  const res = await axios.get("/auth/logout");
+  const res = await axios.get("/api/auth/logout");
   return res.data;
 };
 
 export const fetchCurrentEmployee = async () => {
-  const res = await axios.get("/auth/employees/me");
+  const res = await axios.get("/api/auth/employees/me");
   return res.data;
 };
 
 export const fetchCurrentAdmin = async () => {
-  const res = await axios.get("/auth/admins/me");
+  const res = await axios.get("/api/auth/admins/me");
   return res.data;
 };
 
 
 export const getAllEmployee= async () => {
-  const res = await axios.get("/auth/employees/allProfile");
+  const res = await axios.get("/api/auth/employees/allProfile");
   return res.data;
 };
 

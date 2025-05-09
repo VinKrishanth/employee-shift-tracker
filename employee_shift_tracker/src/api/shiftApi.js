@@ -1,14 +1,14 @@
 import axios from "@/lib/axios"; 
 
 export const createShift = async (values) => {
-  const res = await axios.post("/shift/start", values);
+  const res = await axios.post("/api/shift/start", values);
   return res.data;
 };
 
 
 export const endShift = async (values) => {
   try {
-    const res = await axios.put('/shift/end', values);
+    const res = await axios.put('/api/shift/end', values);
     return res.data;
   } catch (error) {
     console.error('Error ending shift:', error);
@@ -17,7 +17,7 @@ export const endShift = async (values) => {
 
 export const startBreak = async (values) => {
   try {
-    const res = await axios.put('/shift/break/start', values);
+    const res = await axios.put('/api/shift/break/start', values);
     return res.data;
   } catch (error) {
     console.error('Error ending shift:', error);
@@ -27,7 +27,7 @@ export const startBreak = async (values) => {
 
 export const stopBreak = async (values) => {
   try {
-    const res = await axios.put('/shift/break/end', values);
+    const res = await axios.put('/api/shift/break/end', values);
     return res.data;
   } catch (error) {
     console.error('Error ending shift:', error);
@@ -35,11 +35,11 @@ export const stopBreak = async (values) => {
 };
 
 export const getUserShifts = async (activeOnly = true) => {
-  const response = await fetch(`/shifts?activeOnly=${activeOnly}`);
+  const response = await fetch(`/api/shifts?activeOnly=${activeOnly}`);
   return response.json();
 };
 
 export const getAllEmployeeShift= async () => {
-  const res = await axios.get("/shift/all");
+  const res = await axios.get("/api/shift/all");
   return res.data;
 };
