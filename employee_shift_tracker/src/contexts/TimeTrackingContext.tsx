@@ -1,22 +1,30 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "./AuthContext";
+import {
+  createShift,
+  endShift,
+  startBreak,
+  stopBreak,
+} from "@/api/shiftApi.js";
 
 export type TimeStatus = "idle" | "working" | "break";
 export type LocationData = { latitude: number; longitude: number } | null;
 
 export interface TimeEntry {
-  id: string;
+  _id: string;
   userId: string;
+  projectId: string;
   date: string;
   startTime: string;
   endTime: string | null;
   startLocation: LocationData;
   endLocation: LocationData;
   breaks: {
-    id: string;
+    _id: string;
     startTime: string;
     endTime: string | null;
+    type: String;
   }[];
   notes: string;
 }
@@ -27,8 +35,8 @@ interface TimeTrackingContextType {
   entries: TimeEntry[];
   currentLocation: LocationData;
   locationPermissionGranted: boolean;
-  startWork: () => Promise<void>;
-  pauseWork: () => Promise<void>;
+  startWork: (projectId: string) => Promise<void>;
+  pauseWork: (breakType: string) => Promise<void>;
   resumeWork: () => Promise<void>;
   endWork: (notes?: string) => Promise<void>;
   requestLocationPermission: () => Promise<boolean>;
@@ -50,7 +58,9 @@ export const useTimeTracking = () => {
 export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user } = useAuth();
+  const { user, setIsTimeTracking } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const [currentStatus, setCurrentStatus] = useState<TimeStatus>("idle");
   const [currentEntry, setCurrentEntry] = useState<TimeEntry | null>(null);
   const [entries, setEntries] = useState<TimeEntry[]>([]);
@@ -65,17 +75,12 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
       if (storedEntries) {
         try {
           const parsedEntries: TimeEntry[] = JSON.parse(storedEntries);
-          const userEntries = parsedEntries.filter(
-            (entry) => entry.userId === user.id
-          );
-          setEntries(userEntries);
+          setIsTimeTracking(parsedEntries[0].projectId);
 
-          // Check for any active entries
-          const activeEntry = userEntries.find((entry) => !entry.endTime);
+          const activeEntry = parsedEntries.find((entry) => !entry.endTime);
           if (activeEntry) {
             setCurrentEntry(activeEntry);
-
-            // Determine current status
+            console.log(activeEntry);
             const activeBreak = activeEntry.breaks.find(
               (breakItem) => !breakItem.endTime
             );
@@ -92,31 +97,6 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [user]);
 
-  // Save entries to localStorage whenever they change
-  useEffect(() => {
-    if (user && entries.length > 0) {
-      const storedEntries = localStorage.getItem("timeTrackEntries");
-      let allEntries = [];
-
-      if (storedEntries) {
-        try {
-          const parsedEntries: TimeEntry[] = JSON.parse(storedEntries);
-          const otherUserEntries = parsedEntries.filter(
-            (entry) => entry.userId !== user.id
-          );
-          allEntries = [...otherUserEntries, ...entries];
-        } catch (error) {
-          allEntries = entries;
-        }
-      } else {
-        allEntries = entries;
-      }
-
-      localStorage.setItem("timeTrackEntries", JSON.stringify(allEntries));
-    }
-  }, [entries, user]);
-
-  // Get current location
   const getCurrentLocation = (): Promise<LocationData> => {
     return new Promise((resolve, reject) => {
       if (!locationPermissionGranted) {
@@ -135,14 +115,22 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
             resolve(locationData);
           },
           (error) => {
-            console.error("Error getting location:", error);
-            toast(`Unable to get your location: ${error.message}`);
+            toast({
+              title: "Unable to get your location",
+              description: `${error.message}`,
+              variant: "destructive",
+            });
+
             resolve(null);
           },
           { enableHighAccuracy: true }
         );
       } else {
-        toast("Geolocation is not supported by your browser");
+        toast({
+          title: "Geolocation is not supported",
+          description: `Geolocation is not supported by your browser}`,
+          variant: "destructive",
+        });
         resolve(null);
       }
     });
@@ -151,7 +139,11 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
       if (!navigator.geolocation) {
-        toast("Geolocation is not supported by your browser");
+        toast({
+          title: "Geolocation is not supported",
+          description: `Geolocation is not supported by your browser}`,
+          variant: "destructive",
+        });
         return false;
       }
 
@@ -159,6 +151,7 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
         (resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: true,
+            timeout: 10000,
           });
         }
       );
@@ -171,12 +164,10 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentLocation(locationData);
       setLocationPermissionGranted(true);
 
-      toast("Your location will be recorded when you check in/out.");
-
       return true;
     } catch (error) {
       console.error("Error requesting location permission:", error);
-      toast("You need to allow location access for check-in/out tracking.");
+      // toast("You need to allow location access for check-in/out tracking.");
       return false;
     }
   };
@@ -190,23 +181,29 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     return date.toISOString().split("T")[0]; // YYYY-MM-DD format
   };
 
-  const startWork = async (): Promise<void> => {
+  const startWork = async (projectId: string): Promise<void> => {
     if (!user) {
-      toast("Please log in to start tracking time");
+      toast({
+        title: "Login",
+        description: `Please log in to start tracking time`,
+        variant: "destructive",
+      });
       return;
     }
 
     if (currentStatus !== "idle") {
-      toast("You're already tracking time. End your current session first.");
+      toast({
+        title: "Tracking time",
+        description: `You're already tracking time. End your current session first.`,
+        variant: "destructive",
+      });
       return;
     }
-
-    // Get location for check-in
     const location = await getCurrentLocation();
-
     const newEntry: TimeEntry = {
-      id: "",
+      _id: "",
       userId: user.id,
+      projectId: projectId,
       date: formatDateForEntry(),
       startTime: getCurrentTimeString(),
       endTime: null,
@@ -215,115 +212,155 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
       breaks: [],
       notes: "",
     };
-
-    setCurrentEntry(newEntry);
-    setEntries((prev) => [newEntry, ...prev]);
-    setCurrentStatus("working");
-
-    toast("Your work session has begun. Don't forget to take breaks!");
+    setIsLoading(true);
+    try {
+      const data = await createShift(newEntry);
+      if (data.success) {
+        setIsTimeTracking(projectId);
+        setCurrentEntry(data.shift);
+        localStorage.setItem("timeTrackEntries", JSON.stringify([data.shift]));
+        setCurrentStatus("working");
+        toast({
+          title: "Shift started successfully!",
+          description: `Your shift has been successfully started.`,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to start shift:", error);
+      toast({
+        title: "Failed to start shift:",
+        description: `${error}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const pauseWork = async (): Promise<void> => {
+  const pauseWork = async (breakType: string): Promise<void> => {
     if (currentStatus !== "working" || !currentEntry) {
-      //   toast("Not working", "You need to start work before taking a break");
+      toast({
+        title: "Not working",
+        description: `You need to start work before taking a break`,
+        variant: "destructive",
+      });
       return;
     }
 
-    // Create a new break
     const newBreak = {
-      id: "",
+      id: currentEntry._id,
       startTime: getCurrentTimeString(),
-      endTime: null,
+      type: breakType,
     };
 
-    const updatedEntry = {
-      ...currentEntry,
-      breaks: [...currentEntry.breaks, newBreak],
-    };
-
-    setCurrentEntry(updatedEntry);
-    setEntries((prev) =>
-      prev.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
-    );
-    setCurrentStatus("break");
-
-    // toast("Break started", "Enjoy your break! Don't forget to resume when you're back.");
+    setIsLoading(true);
+    try {
+      const data = await startBreak(newBreak);
+      if (data.success) {
+        console.log(data.shift);
+        setCurrentEntry(data.shift);
+        localStorage.setItem("timeTrackEntries", JSON.stringify([data.shift]));
+        setCurrentStatus("break");
+        toast({
+          title: "Break started",
+          description: `${data.message}`,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const resumeWork = async (): Promise<void> => {
     if (currentStatus !== "break" || !currentEntry) {
-      //   toast("Not on break", "You need to start a break before resuming work");
+      toast({
+        title: "Not on break",
+        description: `You need to start a break before resuming work`,
+        variant: "destructive",
+      });
       return;
     }
-
-    // Find the active break and end it
-    const updatedBreaks = currentEntry.breaks.map((breakItem) => {
-      if (!breakItem.endTime) {
-        return {
-          ...breakItem,
-          endTime: getCurrentTimeString(),
-        };
-      }
-      return breakItem;
-    });
-
-    const updatedEntry = {
-      ...currentEntry,
-      breaks: updatedBreaks,
+  
+    const shiftEndPayload = {
+      id: currentEntry._id,
+      endTime: new Date().toISOString(),
     };
-
-    setCurrentEntry(updatedEntry);
-    setEntries((prev) =>
-      prev.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
-    );
-    setCurrentStatus("working");
-
-    // toast("Work resumed", "Welcome back! Your work session has resumed.");
+  
+    console.log(currentEntry._id);
+    setIsLoading(true);
+    try {
+      const data = await stopBreak(shiftEndPayload);
+      if (data.success && data.shift) {
+        setCurrentEntry(data.shift);
+        localStorage.setItem("timeTrackEntries", JSON.stringify([data.shift]));
+        setCurrentStatus("working");
+        toast({
+          title: "Work resumed",
+          description: `${data.message}`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Could not resume work.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast({
+        title: "Unexpected error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
 
   const endWork = async (notes: string = ""): Promise<void> => {
     if (currentStatus === "idle" || !currentEntry) {
-      //   toast("Not tracking", "You need to start work before ending it");
+      toast({
+        title: "Not tracking",
+        description: `You're already tracking time. End your current session first.`,
+        variant: "destructive",
+      });
       return;
     }
 
-    // If currently on a break, end it first
-    let updatedBreaks = currentEntry.breaks;
-    if (currentStatus === "break") {
-      updatedBreaks = currentEntry.breaks.map((breakItem) => {
-        if (!breakItem.endTime) {
-          return {
-            ...breakItem,
-            endTime: getCurrentTimeString(),
-          };
-        }
-        return breakItem;
-      });
-    }
-
-    // Get location for check-out
     const location = await getCurrentLocation();
 
     const updatedEntry = {
-      ...currentEntry,
+      _id: currentEntry._id,
       endTime: getCurrentTimeString(),
       endLocation: location,
-      breaks: updatedBreaks,
       notes: notes || currentEntry.notes,
     };
 
-    setCurrentEntry(null);
-    setEntries((prev) =>
-      prev.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
-    );
-    setCurrentStatus("idle");
-
-    // toast("Work session ended", "Your work session has been recorded successfully.");
+    setIsLoading(true);
+    try {
+      const data = await endShift(updatedEntry);
+      if (data.success) {
+        setCurrentEntry(null);
+        setCurrentStatus("idle");
+        setIsTimeTracking("");
+        localStorage.removeItem("timeTrackEntries");
+        toast({
+          title: "Work session ended",
+          description: `${data.message}`,
+        });
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateEntryNotes = (entryId: string, notes: string): void => {
     // Update current entry if it's the active one
-    if (currentEntry && currentEntry.id === entryId) {
+    if (currentEntry && currentEntry.projectId === entryId) {
       setCurrentEntry({
         ...currentEntry,
         notes,
@@ -332,7 +369,9 @@ export const TimeTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Update in entries list
     setEntries((prev) =>
-      prev.map((entry) => (entry.id === entryId ? { ...entry, notes } : entry))
+      prev.map((entry) =>
+        entry.projectId === entryId ? { ...entry, notes } : entry
+      )
     );
 
     // toast("Notes updated", "Your entry notes have been updated.");

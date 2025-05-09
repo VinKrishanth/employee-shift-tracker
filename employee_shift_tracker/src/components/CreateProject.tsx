@@ -365,7 +365,7 @@ const CreateProject = () => {
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/employee/dashboard")}
                 >
                   Cancel
                 </Button>

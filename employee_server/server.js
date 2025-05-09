@@ -6,6 +6,7 @@ import connectCloudinary from './configs/cloudinaryConfig.js';
 import 'dotenv/config';
 import employeeRoutes from './routes/employeeRoutes.js'; 
 import projectRoutes from './routes/projectRoutes.js'; 
+import shiftRoutes from './routes/shiftRoutes.js'; 
 
 
 const app = express();
@@ -44,6 +45,7 @@ app.use(cookieParser());
 // Define routes
 app.use('/api/auth', employeeRoutes); 
 app.use('/api/auth/project', projectRoutes); 
+app.use('/api/shift', shiftRoutes); 
 
 
 // Health check route

@@ -19,6 +19,8 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isTimeTracking: String;
+  setIsTimeTracking: (isTimeTracking: String) => void;
   setIsLoading: (loading: boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -28,7 +30,9 @@ const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  isTimeTracking: null,
   setIsLoading: () => {},
+  setIsTimeTracking: () => {},
   login: async () => {},
   logout: async () => {},
 };
@@ -38,6 +42,7 @@ const AuthContext = createContext<AuthState>(initialState);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isTimeTracking, setIsTimeTracking] = useState<String>('');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -66,7 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
         }
       } catch (error) {
-        console.error("Auth check failed:", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -130,7 +134,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
-        setIsLoading
+        setIsLoading,
+        isTimeTracking,
+        setIsTimeTracking
       }}
     >
       {children}

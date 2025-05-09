@@ -2,19 +2,40 @@ import { useState, useEffect } from "react";
 import { useTimeTracking, TimeStatus } from "@/contexts/TimeTrackingContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, PlayCircle, PauseCircle, StopCircle } from "lucide-react";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  PlayCircle,
+  StopCircle,
+  Coffee,
+  Sandwich
+} from "lucide-react";
 import { format, differenceInSeconds } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const TimeTracker: React.FC = () => {
   const {
     currentStatus,
     currentEntry,
     currentLocation,
-    startWork,
     pauseWork,
     resumeWork,
     endWork,
@@ -65,7 +86,9 @@ const TimeTracker: React.FC = () => {
       const seconds = totalElapsedSeconds % 60;
 
       setTimeElapsed(
-        `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+        `${hours.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
       );
     }, 1000);
 
@@ -135,7 +158,9 @@ const TimeTracker: React.FC = () => {
                     {format(new Date(currentEntry.date), "EEEE, MMMM d, yyyy")}
                   </span>
                 </div>
-                <div className="text-3xl font-bold font-mono">{timeElapsed}</div>
+                <div className="text-3xl font-bold font-mono">
+                  {timeElapsed}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
@@ -172,7 +197,7 @@ const TimeTracker: React.FC = () => {
                   <div className="space-y-2 max-h-32 overflow-y-auto">
                     {currentEntry.breaks.map((breakItem) => (
                       <div
-                        key={breakItem.id}
+                        key={breakItem._id}
                         className="flex justify-between text-sm p-2 bg-muted/30 rounded"
                       >
                         <span>
@@ -181,13 +206,12 @@ const TimeTracker: React.FC = () => {
                             ? formatDate(breakItem.endTime)
                             : "Ongoing"}
                         </span>
+                        <span className="text-sm capitalize cursor-pointer">{breakItem.type}</span>
                         <Badge
                           variant={breakItem.endTime ? "outline" : "secondary"}
                           className="ml-2"
                         >
-                          {breakItem.endTime
-                            ? "Completed"
-                            : "Active"}
+                          {breakItem.endTime ? "Completed" : "Active"}
                         </Badge>
                       </div>
                     ))}
@@ -211,29 +235,6 @@ const TimeTracker: React.FC = () => {
               <p className="text-muted-foreground mb-2">
                 You are not tracking time right now
               </p>
-              <Button
-                className="mt-2"
-                size="lg"
-                onClick={startWork}
-                disabled={!locationPermissionGranted}
-              >
-                <PlayCircle className="mr-2 h-5 w-5" />
-                Start Working
-              </Button>
-              
-              {!locationPermissionGranted && (
-                <div className="mt-4 text-sm text-amber-600">
-                  Location permission is needed for check-in tracking.
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => requestLocationPermission()}
-                    className="ml-2"
-                  >
-                    Enable Location
-                  </Button>
-                </div>
-              )}
             </div>
           )}
         </CardContent>
@@ -242,30 +243,29 @@ const TimeTracker: React.FC = () => {
           <CardFooter className="flex justify-between">
             {currentStatus === "working" ? (
               <>
-                <Button
-                  variant="outline"
-                  onClick={pauseWork}
-                >
-                  <PauseCircle className="mr-2 h-5 w-5" />
-                  Take a Break
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleEndWork}
-                >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
+                  <Button variant="outline" onClick={()=>{pauseWork('tea break' )}}>
+                    <Coffee className="mr-2 h-5 w-5 text-primary" />
+                    Tea Break
+                  </Button>
+                  <Button variant="outline" onClick={()=>{pauseWork('lunch break')}}>
+                    <Sandwich className="mr-2 h-5 w-5 text-primary" />
+                    Lunch Break
+                  </Button>
+                </div>
+                <Button variant="destructive" onClick={handleEndWork}>
                   <StopCircle className="mr-2 h-5 w-5" />
                   End Work
                 </Button>
               </>
             ) : (
               <>
-                <Button
-                  onClick={resumeWork}
-                  className="w-full"
-                >
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  Resume Work
-                </Button>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
+                  <Button onClick={resumeWork} className="w-full">
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    Resume Work
+                  </Button>
+                </div>
                 <Button
                   variant="destructive"
                   onClick={handleEndWork}
@@ -286,7 +286,8 @@ const TimeTracker: React.FC = () => {
           <DialogHeader>
             <DialogTitle>End Work Session</DialogTitle>
             <DialogDescription>
-              Add a note about what you've accomplished during this work session.
+              Add a note about what you've accomplished during this work
+              session.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -298,7 +299,10 @@ const TimeTracker: React.FC = () => {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEndWorkDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setEndWorkDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={confirmEndWork}>End Session</Button>
@@ -309,4 +313,4 @@ const TimeTracker: React.FC = () => {
   );
 };
 
-export default TimeTracker
+export default TimeTracker;

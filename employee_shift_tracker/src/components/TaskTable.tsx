@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -10,7 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Play, Trash } from "lucide-react";
+import { Pencil, Play, StopCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface TaskData {
   id: string;
@@ -23,11 +23,12 @@ export interface TaskData {
 
 interface TaskTableProps {
   data: TaskData[];
-  onTaskStart: (profile: TaskData) => void;
+  onTaskStart: (id: String) => void;
   onEdit: (id: String) => void;
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({ data, onTaskStart, onEdit }) => {
+  const { isTimeTracking } = useAuth();
   return (
     <div className="rounded-md border">
       <Table>
@@ -63,14 +64,27 @@ const TaskTable: React.FC<TaskTableProps> = ({ data, onTaskStart, onEdit }) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center items-center">
-                    <Button
-                      variant="outline"
-                      onClick={() => onTaskStart(task)}
-                      className=""
-                    >
-                      Start
-                      <Play className="w-4 h-4" />
-                    </Button>
+                    {isTimeTracking !== task.id ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={() => onTaskStart(task.id)}
+                          disabled={!!isTimeTracking}
+                        >
+                          Start<Play className="w-4 h-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={() => onTaskStart(task.id)}
+                          disabled={!!isTimeTracking}
+                        >
+                         End <StopCircle className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
